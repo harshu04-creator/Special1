@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            background: #000;
+            height: 100vh;
+        }
+        /* Background Slideshow - 100 Photos */
+        .slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        .slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* Elegant Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+            z-index: 3;
+            pointer-events: none;
+        }
+        /* Minimalist Counter */
+        .counter {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 2px;
+            z-index: 10;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            font-weight: 300;
+        }
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 10;
+        }
+        /* Loading State */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 16px;
+            letter-spacing: 3px;
+            z-index: 5;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        @media (max-width: 768px) {
+            .counter {
+                bottom: 20px;
+                right: 20px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">LOADING</div>
+    <div class="slideshow-container" id="slideshowContainer"></div>
+    <div class="overlay"></div>
+    <div class="counter" id="counter">1 / 100</div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <script>
+        // Configuration
+        const TOTAL_PHOTOS = 100;
+        const TRANSITION_DURATION = 3000; // 3 seconds per photo
+        const PRELOAD_AHEAD = 3; // Preload 3 images ahead for smoothness
+
+        let currentIndex = 0;
+        let photos = [];
+        let loadedImages = new Set();
+        const container = document.getElementById('slideshowContainer');
+        const counter = document.getElementById('counter');
+        const progressBar = document.getElementById('progressBar');
+        const loading = document.getElementById('loading');
+
+        // Generate photo paths - UPDATE WITH YOUR NAMING SCHEME
+        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
+            photos.push(`photos/photo${i}.jpg`);
+        }
+
+        // Create slide elements (without images initially for performance)
+        function initSlides() {
+            photos.forEach((photo, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.dataset.index = index;
+                slide.dataset.src = photo;
+                
+                const img = document.createElement('img');
+                img.alt = `Photo ${index + 1}`;
+                
+                slide.appendChild(img);
+                container.appendChild(slide);
+            });
+        }
+
+        // Lazy load image with optimization
+        function loadImage(index) {
+            if (loadedImages.has(index)) return Promise.resolve();
+            
+            const slide = container.querySelector(`.slide[data-index="${index}"]`);
+            if (!slide) return Promise.reject();
+            
+            const img = slide.querySelector('img');
+            const src = slide.dataset.src;
+            
+            return new Promise((resolve, reject) => {
+                img.onload = () => {
+                    loadedImages.add(index);
+                    resolve();
+                };
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+
+        // Preload upcoming images for smooth transitions
+        function preloadUpcoming() {
+            for (let i = 1; i <= PRELOAD_AHEAD; i++) {
+                const nextIndex = (currentIndex + i) % photos.length;
+                loadImage(nextIndex).catch(() => {});
+            }
+        }
+
+        // Change to next slide
+        function changeSlide() {
+            const slides = container.querySelectorAll('.slide');
+            slides[currentIndex].classList.remove('active');
+            
+            currentIndex = (currentIndex + 1) % photos.length;
+            
+            // Load current image if not loaded
+            loadImage(currentIndex).then(() => {
+                slides[currentIndex].classList.add('active');
+                updateCounter();
+                preloadUpcoming();
+            }).catch(() => {
+                // Skip to next if image fails
+                currentIndex = (currentIndex + 1) % photos.length;
+                changeSlide();
+            });
+        }
+
+        // Update counter display
+        function updateCounter() {
+            counter.textContent = `${currentIndex + 1} / ${TOTAL_PHOTOS}`;
+        }
+
+        // Animate progress bar
+        function animateProgressBar() {
+            let progress = 0;
+            const increment = 100 / (TRANSITION_DURATION / 50);
+            
+            setInterval(() => {
+                progress += increment;
+                if (progress >= 100) progress = 0;
+                progressBar.style.width = progress + '%';
+            }, 50);
+        }
+
+        // Initialize slideshow
+        async function startSlideshow() {
+            initSlides();
+            
+            // Load first image
+            await loadImage(0);
+            const firstSlide = container.querySelector('.slide[data-index="0"]');
+            firstSlide.classList.add('active');
+            
+            // Hide loading indicator
+            loading.style.display = 'none';
+            
+            // Preload upcoming images
+            preloadUpcoming();
+            
+            // Update counter
+            updateCounter();
+            
+            // Start progress bar
+            animateProgressBar();
+            
+            // Start automatic transitions
+            setInterval(changeSlide, TRANSITION_DURATION);
+        }
+
+        // Start when page loads
+        window.addEventListener('load', startSlideshow);
+    </script>
+</body>
+</html>
