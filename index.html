@@ -3,403 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Gallery</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Georgia', serif;
-            overflow: hidden;
-            background: #000;
-            height: 100vh;
-        }
-        /* Background Slideshow - 100 Photos */
-        .slideshow-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-        }
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-        .slide.active {
-            opacity: 1;
-            z-index: 2;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        /* Elegant Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
-            z-index: 3;
-            pointer-events: none;
-        }
-        /* Title Overlay (Optional - can be removed) */
-        .title {
-            position: fixed;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            font-size: 32px;
-            letter-spacing: 4px;
-            z-index: 10;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            font-weight: 300;
-            text-align: center;
-            opacity: 0;
-            animation: fadeInTitle 2s ease-in 0.5s forwards;
-        }
-        @keyframes fadeInTitle {
-            to { opacity: 1; }
-        }
-        /* Minimalist Counter */
-        .counter {
-            position: fixed;
-            bottom: 30px;
-            right: 40px;
-            color: #fff;
-            font-size: 14px;
-            letter-spacing: 2px;
-            z-index: 10;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            font-weight: 300;
-        }
-        /* Progress Bar */
-        .progress-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.8);
-            width: 0%;
-            transition: width 0.1s linear;
-            z-index: 10;
-        }
-        /* Loading State */
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-size: 16px;
-            letter-spacing: 3px;
-            z-index: 5;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-        /* Control Buttons */
-        .controls {
-            position: fixed;
-            bottom: 30px;
-            left: 40px;
-            z-index: 10;
-            display: flex;
-            gap: 15px;
-        }
-        .control-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 12px;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border-radius: 3px;
-        }
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-        .control-btn:active {
-            transform: translateY(0);
-        }
-        @media (max-width: 768px) {
-            .counter {
-                bottom: 20px;
-                right: 20px;
-                font-size: 12px;
-            }
-            .controls {
-                bottom: 20px;
-                left: 20px;
-                gap: 10px;
-            }
-            .control-btn {
-                padding: 6px 12px;
-                font-size: 10px;
-            }
-            .title {
-                font-size: 24px;
-                top: 30px;
-            }
-        }
-    </style>
+    <title>Special Person Gallery</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="loading" id="loading">LOADING</div>
-    <div class="slideshow-container" id="slideshowContainer"></div>
-    <div class="overlay"></div>
-    
-    <!-- Optional Title - Remove if not needed -->
-    <div class="title" id="title">MEMORIES</div>
-    
-    <div class="controls">
-        <button class="control-btn" id="prevBtn">← PREV</button>
-        <button class="control-btn" id="playPauseBtn">PAUSE</button>
-        <button class="control-btn" id="nextBtn">NEXT →</button>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">✨ Special Memories ✨</h1>
+            <p class="subtitle">A Collection of Beautiful Moments</p>
+        </header>
+
+        <!-- Page Navigation -->
+        <nav class="page-nav">
+            <button class="nav-btn active" data-page="1">Page 1</button>
+            <button class="nav-btn" data-page="2">Page 2</button>
+            <button class="nav-btn" data-page="3">Page 3</button>
+            <button class="nav-btn" data-page="4">Page 4</button>
+            <button class="nav-btn" data-page="5">Page 5</button>
+        </nav>
+
+        <!-- Gallery Pages -->
+        <div class="gallery-container">
+            <!-- Page 1: 20 photos -->
+            <div class="gallery-page active" id="page-1">
+                <div class="gallery-grid" id="grid-1"></div>
+            </div>
+
+            <!-- Page 2: 20 photos -->
+            <div class="gallery-page" id="page-2">
+                <div class="gallery-grid" id="grid-2"></div>
+            </div>
+
+            <!-- Page 3: 20 photos -->
+            <div class="gallery-page" id="page-3">
+                <div class="gallery-grid" id="grid-3"></div>
+            </div>
+
+            <!-- Page 4: 20 photos -->
+            <div class="gallery-page" id="page-4">
+                <div class="gallery-grid" id="grid-4"></div>
+            </div>
+
+            <!-- Page 5: 20 photos -->
+            <div class="gallery-page" id="page-5">
+                <div class="gallery-grid" id="grid-5"></div>
+            </div>
+        </div>
+
+        <!-- Page Counter -->
+        <div class="page-counter">
+            <span class="current-page">1</span> / <span class="total-pages">5</span>
+        </div>
+
+        <!-- Arrow Navigation -->
+        <div class="arrow-nav">
+            <button class="arrow-btn prev-btn" id="prevBtn">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="arrow-btn next-btn" id="nextBtn">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
     </div>
-    
-    <div class="counter" id="counter">1 / 100</div>
-    <div class="progress-bar" id="progressBar"></div>
 
-    <script>
-        // Configuration
-        const TOTAL_PHOTOS = 100;
-        const TRANSITION_DURATION = 3000; // 3 seconds per photo
-        const PRELOAD_AHEAD = 3; // Preload 3 images ahead for smoothness
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="close-btn" id="closeBtn">×</button>
+        <button class="lightbox-arrow prev-arrow" id="prevImage">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <img src="" alt="Gallery Image" id="lightboxImg">
+        <button class="lightbox-arrow next-arrow" id="nextImage">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+        <div class="image-counter">
+            <span id="currentImageNum">1</span> / <span id="totalImages">100</span>
+        </div>
+    </div>
 
-        let currentIndex = 0;
-        let photos = [];
-        let loadedImages = new Set();
-        let isPlaying = true;
-        let slideInterval = null;
-        let progressInterval = null;
-        
-        const container = document.getElementById('slideshowContainer');
-        const counter = document.getElementById('counter');
-        const progressBar = document.getElementById('progressBar');
-        const loading = document.getElementById('loading');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-
-        // Generate photo paths - UPDATE WITH YOUR NAMING SCHEME
-        // Examples: 'photos/photo1.jpg', 'images/img_1.png', 'pics/001.jpg'
-        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
-            photos.push(`photos/photo${i}.jpg`);
-            // Alternative formats:
-            // photos.push(`photos/photo${String(i).padStart(3, '0')}.jpg`); // photo001.jpg
-            // photos.push(`images/img_${i}.png`);
-        }
-
-        // Create slide elements (without images initially for performance)
-        function initSlides() {
-            photos.forEach((photo, index) => {
-                const slide = document.createElement('div');
-                slide.className = 'slide';
-                slide.dataset.index = index;
-                slide.dataset.src = photo;
-                
-                const img = document.createElement('img');
-                img.alt = `Photo ${index + 1}`;
-                
-                slide.appendChild(img);
-                container.appendChild(slide);
-            });
-        }
-
-        // Lazy load image with optimization
-        function loadImage(index) {
-            if (loadedImages.has(index)) return Promise.resolve();
-            
-            const slide = container.querySelector(`.slide[data-index="${index}"]`);
-            if (!slide) return Promise.reject();
-            
-            const img = slide.querySelector('img');
-            const src = slide.dataset.src;
-            
-            return new Promise((resolve, reject) => {
-                img.onload = () => {
-                    loadedImages.add(index);
-                    resolve();
-                };
-                img.onerror = reject;
-                img.src = src;
-            });
-        }
-
-        // Preload upcoming images for smooth transitions
-        function preloadUpcoming() {
-            for (let i = 1; i <= PRELOAD_AHEAD; i++) {
-                const nextIndex = (currentIndex + i) % photos.length;
-                loadImage(nextIndex).catch(() => {});
-            }
-        }
-
-        // Change to specific slide
-        function goToSlide(index) {
-            const slides = container.querySelectorAll('.slide');
-            slides[currentIndex].classList.remove('active');
-            
-            currentIndex = index;
-            
-            // Load current image if not loaded
-            loadImage(currentIndex).then(() => {
-                slides[currentIndex].classList.add('active');
-                updateCounter();
-                preloadUpcoming();
-                resetProgressBar();
-            }).catch(() => {
-                // Skip to next if image fails
-                goToSlide((currentIndex + 1) % photos.length);
-            });
-        }
-
-        // Change to next slide
-        function changeSlide(direction = 1) {
-            const nextIndex = (currentIndex + direction + photos.length) % photos.length;
-            goToSlide(nextIndex);
-        }
-
-        // Update counter display
-        function updateCounter() {
-            counter.textContent = `${currentIndex + 1} / ${TOTAL_PHOTOS}`;
-        }
-
-        // Reset progress bar
-        function resetProgressBar() {
-            progressBar.style.width = '0%';
-        }
-
-        // Animate progress bar
-        function startProgressBar() {
-            let progress = 0;
-            const increment = 100 / (TRANSITION_DURATION / 50);
-            
-            progressInterval = setInterval(() => {
-                progress += increment;
-                if (progress >= 100) progress = 0;
-                progressBar.style.width = progress + '%';
-            }, 50);
-        }
-
-        // Stop progress bar
-        function stopProgressBar() {
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-        }
-
-        // Start automatic slideshow
-        function startAutoplay() {
-            if (slideInterval) return;
-            isPlaying = true;
-            playPauseBtn.textContent = 'PAUSE';
-            startProgressBar();
-            slideInterval = setInterval(() => changeSlide(1), TRANSITION_DURATION);
-        }
-
-        // Stop automatic slideshow
-        function stopAutoplay() {
-            if (slideInterval) {
-                clearInterval(slideInterval);
-                slideInterval = null;
-            }
-            isPlaying = false;
-            playPauseBtn.textContent = 'PLAY';
-            stopProgressBar();
-        }
-
-        // Toggle play/pause
-        function togglePlayPause() {
-            if (isPlaying) {
-                stopAutoplay();
-            } else {
-                startAutoplay();
-            }
-        }
-
-        // Event listeners for controls
-        playPauseBtn.addEventListener('click', togglePlayPause);
-        prevBtn.addEventListener('click', () => {
-            changeSlide(-1);
-            if (isPlaying) {
-                stopAutoplay();
-                startAutoplay();
-            }
-        });
-        nextBtn.addEventListener('click', () => {
-            changeSlide(1);
-            if (isPlaying) {
-                stopAutoplay();
-                startAutoplay();
-            }
-        });
-
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                changeSlide(-1);
-                if (isPlaying) {
-                    stopAutoplay();
-                    startAutoplay();
-                }
-            } else if (e.key === 'ArrowRight') {
-                changeSlide(1);
-                if (isPlaying) {
-                    stopAutoplay();
-                    startAutoplay();
-                }
-            } else if (e.key === ' ') {
-                e.preventDefault();
-                togglePlayPause();
-            }
-        });
-
-        // Initialize slideshow
-        async function startSlideshow() {
-            initSlides();
-            
-            // Load first image
-            await loadImage(0);
-            const firstSlide = container.querySelector('.slide[data-index="0"]');
-            firstSlide.classList.add('active');
-            
-            // Hide loading indicator
-            loading.style.display = 'none';
-            
-            // Preload upcoming images
-            preloadUpcoming();
-            
-            // Update counter
-            updateCounter();
-            
-            // Start autoplay
-            startAutoplay();
-        }
-
-        // Start when page loads
-        window.addEventListener('load', startSlideshow);
-    </script>
+    <script src="script.js"></script>
 </body>
-    </html>
+</html>
